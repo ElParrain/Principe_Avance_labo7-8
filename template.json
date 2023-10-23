@@ -1,0 +1,92 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines_labo0708_vm_name": {
+            "defaultValue": "labo0708-vm",
+            "type": "String"
+        },
+        "disks_labo0708_vm_OsDisk_1_e004cb2b7d0345a2b9f1030ad3c73991_externalid": {
+            "defaultValue": "/subscriptions/f1aca547-ad09-40c1-a2c5-091af39ac9f1/resourceGroups/Laboratoire0708/providers/Microsoft.Compute/disks/labo0708-vm_OsDisk_1_e004cb2b7d0345a2b9f1030ad3c73991",
+            "type": "String"
+        },
+        "networkInterfaces_labo0708_vm821_externalid": {
+            "defaultValue": "/subscriptions/f1aca547-ad09-40c1-a2c5-091af39ac9f1/resourceGroups/Laboratoire0708/providers/Microsoft.Network/networkInterfaces/labo0708-vm821",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2023-03-01",
+            "name": "[parameters('virtualMachines_labo0708_vm_name')]",
+            "location": "westeurope",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_B1s"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "canonical",
+                        "offer": "0001-com-ubuntu-server-jammy",
+                        "sku": "22_04-lts-gen2",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "osType": "Linux",
+                        "name": "[concat(parameters('virtualMachines_labo0708_vm_name'), '_OsDisk_1_e004cb2b7d0345a2b9f1030ad3c73991')]",
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                            "storageAccountType": "Premium_LRS",
+                            "id": "[parameters('disks_labo0708_vm_OsDisk_1_e004cb2b7d0345a2b9f1030ad3c73991_externalid')]"
+                        },
+                        "deleteOption": "Delete",
+                        "diskSizeGB": 30
+                    },
+                    "dataDisks": [],
+                    "diskControllerType": "SCSI"
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_labo0708_vm_name')]",
+                    "adminUsername": "simon",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": false,
+                        "provisionVMAgent": true,
+                        "patchSettings": {
+                            "patchMode": "ImageDefault",
+                            "assessmentMode": "ImageDefault"
+                        },
+                        "enableVMAgentPlatformUpdates": false
+                    },
+                    "secrets": [],
+                    "allowExtensionOperations": true,
+                    "requireGuestProvisionSignal": true
+                },
+                "securityProfile": {
+                    "uefiSettings": {
+                        "secureBootEnabled": true,
+                        "vTpmEnabled": true
+                    },
+                    "securityType": "TrustedLaunch"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[parameters('networkInterfaces_labo0708_vm821_externalid')]",
+                            "properties": {
+                                "deleteOption": "Detach"
+                            }
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true
+                    }
+                }
+            }
+        }
+    ]
+}
